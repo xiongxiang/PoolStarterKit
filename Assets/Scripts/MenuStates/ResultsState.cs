@@ -1,67 +1,53 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
+namespace PoolKit {
+    public class ResultsState : MonoBehaviour {
 
-namespace PoolKit
-{
-	public class ResultsState : MonoBehaviour {
+        //the game over panel
+        public GameObject gameoverPanel;
+        public Text txtWinnerLabel;
 
-		//the game over panel
-		public GameObject gameoverPanel;
-		//the winner label
-		public GUIText winnerLabel;
+        public Button btnPause;
+        public Button btnRestart;
+        public Button btnMainMenu;
 
-		//the paue button
-		public GameObject pauseButton;
+        /*****************************************/
 
+        void Start() {
+            if (gameoverPanel)
+                gameoverPanel.SetActive(false);
 
-		void Start()
-		{
-			if(gameoverPanel)
-				gameoverPanel.SetActive(false);
-		}
+            this.btnMainMenu.onClick.AddListener(this.OnBtnMainMenuClick);
+            this.btnRestart.onClick.AddListener(this.OnBtnRestartClick);
+        }
 
-		public void OnEnable()	
-		{
-			BaseGameManager.onGameOver += onGameOver;
-			BaseGameManager.onButtonPress += onButtonClickCBF;
-		}
-		public void OnDisable()	
-		{
-			BaseGameManager.onGameOver -= onGameOver;
-			BaseGameManager.onButtonPress -= onButtonClickCBF;
+        public void OnEnable() {
+            BaseGameManager.onGameOver += onGameOver;
+        }
+        public void OnDisable() {
+            BaseGameManager.onGameOver -= onGameOver;
 
-		}
-		public void onButtonClickCBF(string buttonID)
-		{
-			switch (buttonID) {
-			case "Restart":
-				Application.LoadLevel(Application.loadedLevel);
-				break;
-			case "Main Menu":
-				Application.LoadLevel(0);
-				break;
-			}
-		}
+        }
 
-		public void onGameOver(string results)
-		{
-			if(pauseButton)
-			{
-				pauseButton.SetActive(false);
-			}
+        #region button callbacks
+        private void OnBtnRestartClick() {
+            SceneManager.LoadScene(Application.loadedLevel);
+        }
 
-			if(winnerLabel)
-			{
-				winnerLabel.text = results;
-			}
-			if(gameoverPanel)
-			{
-				gameoverPanel.SetActive(true);
-			}
-		}
+        private void OnBtnMainMenuClick() {
+            SceneManager.LoadScene(0);
+        }
+        #endregion
 
-	
-	
-	}
+        public void onGameOver(string results) {
+            this.btnPause.gameObject.SetActive(false);
+            this.txtWinnerLabel.text = results;
+            if (gameoverPanel) {
+                gameoverPanel.SetActive(true);
+            }
+        }
+    }
 }

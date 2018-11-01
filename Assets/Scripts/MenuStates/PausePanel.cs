@@ -54,14 +54,19 @@ namespace PoolKit
 
 		void togglePause()
 		{
-            if (Time.timeScale == 0) {
-                Time.timeScale = 1;
-                iTween.MoveTo(pausePanel, iTween.Hash("x", unapuseXPos, "time", 1, "ignoretimescale", true));
-            } else if (Time.timeScale == 1) {
-                Time.timeScale = 0;
-                iTween.MoveTo(pausePanel, iTween.Hash("x", pauseXPos, "time", 1, "ignoretimescale", true));
-            }
-        }
+			if(Time.timeScale==0)
+			{
+				Time.timeScale=1;
+				iTween.MoveTo(pausePanel,iTween.Hash("x",unapuseXPos,"time",1,"ignoretimescale",true));
+			}
+			else if(Time.timeScale==1)
+			{
+				Time.timeScale=0;
+				iTween.MoveTo(pausePanel,iTween.Hash("x",pauseXPos,"time",1,"ignoretimescale",true));
+			}
+
+
+		}
 
 	}
 }

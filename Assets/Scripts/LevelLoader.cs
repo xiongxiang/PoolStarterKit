@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 namespace PoolKit
 {
@@ -24,14 +25,13 @@ namespace PoolKit
 
 		//lets handle connect. Do we want to load offline mode, or connect to photon.
 		void connect(bool offlineMode, 
-		             int levelToLoad,
+		             string sceneName,
 		             int nomHumans,
 		             int nomAI)
 		{
 			PlayerPrefs.SetInt("nomHumans",nomHumans);
 			PlayerPrefs.SetInt("nomAI",nomAI);
-
-			Application.LoadLevel(levelToLoad);
+            SceneManager.LoadScene(sceneName);
 
 		}
 	}

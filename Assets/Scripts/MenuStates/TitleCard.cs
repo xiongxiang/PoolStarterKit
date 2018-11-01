@@ -30,14 +30,16 @@ namespace PoolKit
 		}
 		public void moveUp()
 		{
-            iTween.MoveTo(gameObject, iTween.Hash("delay", displayTime,
-                                               "time", 1, "y", 0f, "x", 3));
-        }
+			iTween.MoveTo(gameObject,  iTween.Hash("delay",displayTime,
+											   "time",1,"y",0f,"x",3));
+		}
 		public void moveDown()
 		{
-            iTween.MoveTo(gameObject, iTween.Hash("time", 1, "y", 0f, "x", 0f,
-                                               "oncomplete", "moveUp",
-                                               "oncompletetarget", gameObject));
-        }
+			iTween.MoveTo(gameObject, iTween.Hash("time",1,"y",0f,"x",0f,
+			                                   "oncomplete","moveUp",
+			                                   "oncompletetarget",gameObject));
+		}
+
+
 	}
 }

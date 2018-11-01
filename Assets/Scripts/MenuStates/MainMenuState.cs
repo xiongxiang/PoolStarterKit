@@ -1,11 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
+
 namespace PoolKit {
     public class MainMenuState : MonoBehaviour {
-        //graphics quality button
-        public TouchButton2 graphicsQuality;
-        //the list of graphics quality textures
-        public Texture[] graphicsTextures;
 
 
         /// <summary>
@@ -19,28 +17,44 @@ namespace PoolKit {
         //the config panel
         public GameObject configPanel;
 
-        //the enemy button 
-        public TouchButton2 enemyButton;
+        public Button btn8Ball;
+        public Button btn9Ball;
+        public Button btnOption;
+
+        public Button btnPlayerToggle;
+        public Button btnStartGame;
+
+        public Button btnGraphicsQuality;
+        public Button btnAudioToggle;
+        public Button btnOptionsBack;
+
+        public Button btnEnemyButton;
+
+        //the list of graphics quality textures
+        public Sprite[] graphicsSprites;
         //the enemy textures
-        public Texture[] enemyTextures;
+        public Sprite[] enemySprites;
 
-
-
-
-        public int lvltoLoad = 1;
-
+        /******************************************************/
 
         void Start() {
-            updateGraphicsQuality();
-            updateEnemy();
+            this.btn8Ball.onClick.AddListener(this.OnBtn8BallClick);
+            this.btn9Ball.onClick.AddListener(this.OnBtn9BallClick);
+            this.btnOption.onClick.AddListener(this.OnBtnOptionsClick);
+
+
+            this.btnPlayerToggle.onClick.AddListener(this.OnBtnPlayer2ToggleClick);
+            this.btnStartGame.onClick.AddListener(this.OnBtnStartGameClick);
+
+            this.btnGraphicsQuality.onClick.AddListener(this.OnBtnGraphicsToggleClick);
+            this.btnAudioToggle.onClick.AddListener(this.OnBtnAudioToggleClick);
+            this.btnOptionsBack.onClick.AddListener(this.OnBtnAudioToggleClick);
+
+
+            this.btnEnemyButton.onClick.AddListener(this.OnBtnEnemyButtonClick);
         }
-        public void OnEnable() {
-            BaseGameManager.onButtonPress += onButtonClickCBF;
-        }
-        public void OnDisable() {
-            BaseGameManager.onButtonPress -= onButtonClickCBF;
-        }
-        void toggleAudio() {
+
+        void OnBtnAudioToggleClick() {
             if (PlayerPrefs.GetFloat("AudioVolume", 0) == 0) {
                 PlayerPrefs.SetFloat("AudioVolume", 1f);
             } else {
@@ -49,60 +63,17 @@ namespace PoolKit {
             BaseGameManager.toggleAudio();
         }
 
-
-        public void onButtonClickCBF(string buttonID) {
-            switch (buttonID) {
-
-                case "SinglePlayer":
-                    configPanel.SetActive(true);
-                    mainPanel.SetActive(false);
-                    //BaseGameManager.connect(true,1,false);
-                    break;
-
-
-                case "Player2Toggle":
-                    toggleEnemies();
-                    //BaseGameManager.connect(true,1,false);
-                    break;
-                case "StartGame":
-                    handleStartGame();
-                    break;
-                case "8BallButton":
-                    PlayerPrefs.SetInt("GameType", 0);
-                    configPanel.SetActive(true);
-                    mainPanel.SetActive(false);
-                    break;
-                case "9BallButton":
-                    PlayerPrefs.SetInt("GameType", 1);
-                    configPanel.SetActive(true);
-                    mainPanel.SetActive(false);
-                    break;
-
-
-                case "Options":
-                    optionsPanel.SetActive(true);
-                    mainPanel.SetActive(false);
-                    break;
-
-
-
-                case "OptionsBack":
-                    Debug.Log("optionsBack");
-                    optionsPanel.SetActive(false);
-                    mainPanel.SetActive(true);
-                    break;
-
-                case "GraphicsToggle":
-                    toggleQuality();
-                    break;
-            }
-        }
-        public int getLevelToLoad() {
-            return PlayerPrefs.GetInt("GameType", 0) + 1;
+        #region btn callbacks
+        private void OnBtnSinglePlayerClick() {
+            configPanel.SetActive(true);
+            mainPanel.SetActive(false);
         }
 
+        private void OnBtnPlayer2ToggleClick() {
+            OnBtnEnemyButtonClick();
+        }
 
-        void handleStartGame() {
+        private void OnBtnStartGameClick() {
             int enemy = PlayerPrefs.GetInt("Enemy", 0);
             int nomHumans = 1;
             int nomAI = 0;
@@ -113,31 +84,34 @@ namespace PoolKit {
             if (enemy == 2) {
                 nomHumans = 2;
             }
-            BaseGameManager.connect(true, getLevelToLoad(), nomHumans, nomAI);
+            string sceneName = PlayerPrefs.GetString("GameScene", "8Ball");
+            BaseGameManager.connect(true, sceneName, nomHumans, nomAI);
         }
 
-
-        void toggleEnemies() {
-            int val = PlayerPrefs.GetInt("Enemy", 0);
-            val++;
-            if (val >= enemyTextures.Length) {
-                val = 0;
-            }
-            PlayerPrefs.SetInt("Enemy", val);
-            updateEnemy();
-        }
-        void updateEnemy() {
-            int enemy = PlayerPrefs.GetInt("Enemy", 0);
-            if (enemyButton) {
-                if (enemy > -1 && enemy < enemyTextures.Length) {
-                    enemyButton.setTexture(enemyTextures[enemy]);
-                }
-            }
+        private void OnBtn8BallClick() {
+            PlayerPrefs.SetString("GameScene", "8Ball");
+            configPanel.SetActive(true);
+            mainPanel.SetActive(false);
         }
 
+        private void OnBtn9BallClick() {
+            PlayerPrefs.SetString("GameScene", "9Ball");
+            configPanel.SetActive(true);
+            mainPanel.SetActive(false);
+        }
 
+        private void OnBtnOptionsClick() {
+            optionsPanel.SetActive(true);
+            mainPanel.SetActive(false);
+        }
 
-        public void toggleQuality() {
+        private void OnBtnOptionsBackClick() {
+            Debug.Log("optionsBack");
+            optionsPanel.SetActive(false);
+            mainPanel.SetActive(true);
+        }
+
+        private void OnBtnGraphicsToggleClick() {
             int currentQuality = QualitySettings.GetQualityLevel();
 
             if (currentQuality == 0) {
@@ -147,17 +121,24 @@ namespace PoolKit {
             } else if (currentQuality == 2) {
                 QualitySettings.SetQualityLevel(0);
             }
-            Debug.Log("toggleQuality" + QualitySettings.GetQualityLevel() + " oldquality " + currentQuality);
-            updateGraphicsQuality();
+            Debug.LogError("toggleQuality" + QualitySettings.GetQualityLevel() + " oldquality " + currentQuality);
+            this.UpdateBtnImage(this.btnGraphicsQuality, graphicsSprites[QualitySettings.GetQualityLevel()]);
         }
 
-        void updateGraphicsQuality() {
-            if (graphicsQuality) {
-                int qualityLevel = QualitySettings.GetQualityLevel();
-                if (qualityLevel < graphicsTextures.Length) {
-                    graphicsQuality.setTexture(graphicsTextures[QualitySettings.GetQualityLevel()]);
-                }
+        void OnBtnEnemyButtonClick() {
+            int val = PlayerPrefs.GetInt("Enemy", 0);
+            val++;
+            if (val >= enemySprites.Length) {
+                val = 0;
             }
+            PlayerPrefs.SetInt("Enemy", val);
+            this.UpdateBtnImage(this.btnEnemyButton, enemySprites[val]);
+        }
+        #endregion
+
+        private void UpdateBtnImage(Button button, Sprite sprite) {
+            Image img = button.transform.GetComponent<Image>();
+            img.sprite = sprite;
         }
     }
 
